@@ -7,7 +7,8 @@ public class HandRecognition : MonoBehaviour {
     private Vector3 pos;
     private Vector3 vel;
 
-    public GameObject Object;
+	// currently HandPoint
+    public GameObject PaintPointObject;
 
     void Awake()
     {
@@ -22,10 +23,12 @@ public class HandRecognition : MonoBehaviour {
         hand.properties.location.TryGetPosition(out pos);
         hand.properties.location.TryGetVelocity(out vel);
 
-        Object.transform.position = new Vector3(pos.x, pos.y, pos.z + 0.1F);
+		// Handposition rendering
+        PaintPointObject.transform.position = new Vector3(pos.x, pos.y, pos.z + 0.1F);
 
+		// create new Ball if hand is pressed
         if (hand.pressed) {
-            GameObject NewPoint = (GameObject)Instantiate(Object, new Vector3(pos.x, pos.y, pos.z + 0.1F), Quaternion.identity);
+            GameObject NewPoint = (GameObject)Instantiate(PaintPointObject, new Vector3(pos.x, pos.y, pos.z + 0.1F), Quaternion.identity);
             NewPoint.SetActive(true);
         }
         
