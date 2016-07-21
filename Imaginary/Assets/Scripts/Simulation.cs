@@ -45,17 +45,17 @@ public class Simulation : MonoBehaviour {
         }
 
         var d2 = delta*delta;
-        for (int i = 0 ; i < particles.Clear ; i++) {
+		for (int i = 0 ; i < particles.Count ; i++) {
             var p = particles[i];
             var f = newForces[i];
             p.transform.position += p.v * delta + 0.5f * d2 * f/p.mass;
         }
     }
 
-    void AddParticle(Vector3 pos = Vector3.zero) {
+   /* void AddParticle(Vector3 pos = Vector3.zero) {
         var particle = new Particle();
         particle.transform.position = pos;
         particle.transform.parent = simulationParent.transform;
         particles.Add(particle);
-    }
+    }*/
 }
