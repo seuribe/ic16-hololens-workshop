@@ -8,18 +8,20 @@ public class Simulation : MonoBehaviour {
 
     public GameObject simulationParent;
 
-    ForceApplier forceApplier;
+    List<ForceApplier> forceAppliers = new List<ForceApplier>();
 
     void Awake() {
         if (simulationParent == null)
             simulationParent = gameObject;
-
     }
 
 	void Start () {
         LoadParticles();
-        forceApplier = new SpringForce();
-        (forceApplier as SpringForce).AddSpring(particles[0], particles[1], 2, 1);
+        var springForce = new SpringForce();
+        springForce.AddSpring(particles[0], particles[1], 2, 1);
+        forceAppliers.Add(springForce);
+        var isf = new InverseSquareForce(-1);
+        forceAppliers.Add(isf);
     }
 
     void LoadParticles() {
@@ -28,10 +30,10 @@ public class Simulation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Simulate(forceApplier, Time.deltaTime);
+        Simulate(Time.deltaTime);
 	}
 
-    void Simulate(ForceApplier force, float delta) {
+    void Simulate(float delta) {
         var newForces = new Vector3[particles.Count];
         for (int i = 0 ; i < particles.Count ; i++) {
             var a = particles[i];
@@ -42,7 +44,9 @@ public class Simulation : MonoBehaviour {
                 
                 var b = particles[j];
 
-                f += force.CalculateForce(a, b);
+                foreach (var force in forceAppliers) {
+                    f += force.CalculateForce(a, b);
+                }
             }
             newForces[i] = f;
         }
@@ -64,4 +68,5 @@ public class Simulation : MonoBehaviour {
         particle.transform.parent = simulationParent.transform;
         particles.Add(particle);
     }
+
 }
