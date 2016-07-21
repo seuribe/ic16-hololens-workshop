@@ -9,6 +9,7 @@ public class HandRecognition : MonoBehaviour {
 
 	// currently HandPoint
     public GameObject PaintPointObject;
+	public GameObject ParticleParent;
 
     void Awake()
     {
@@ -28,8 +29,9 @@ public class HandRecognition : MonoBehaviour {
 
 		// create new Ball if hand is pressed
         if (hand.pressed) {
-            GameObject NewPoint = (GameObject)Instantiate(PaintPointObject, new Vector3(pos.x, pos.y, pos.z + 0.1F), Quaternion.identity);
-            NewPoint.SetActive(true);
+            GameObject NewPoint = (GameObject)Instantiate(PaintPointObject, new Vector3(0,0,0), Quaternion.identity);
+			NewPoint.transform.parent = ParticleParent.transform;
+			NewPoint.SetActive(true);
         }
         
     }
