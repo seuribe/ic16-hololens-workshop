@@ -4,10 +4,11 @@ using UnityEngine.VR.WSA.Input;
 
 public class HandRecognition : MonoBehaviour {
 
-    private Vector3 HandPosition;
-    private Vector3 HandVelocity;
+    private Vector3 pos;
+    private Vector3 vel;
 
-    public GameObject PaintPoint;
+	// currently HandPoint
+    public GameObject PaintPointObject;
 
     void Awake()
     {
@@ -19,18 +20,15 @@ public class HandRecognition : MonoBehaviour {
     private void InteractionManager_SourceUpdated(InteractionSourceState hand)
     {
         
-        hand.properties.location.TryGetPosition(out HandPosition);
-        hand.properties.location.TryGetVelocity(out HandVelocity);
+        hand.properties.location.TryGetPosition(out pos);
+        hand.properties.location.TryGetVelocity(out vel);
 
-        var HeadPosition = Camera.main.transform.position;
-        var GazeDirection = Camera.main.transform.forward;
+		// Handposition rendering
+        PaintPointObject.transform.position = new Vector3(pos.x, pos.y, pos.z + 0.1F);
 
-        Vector3 paintPoint = HandPosition + 0.1F * GazeDirection;
-
-        PaintPoint.transform.position = paintPoint;
-
+		// create new Ball if hand is pressed
         if (hand.pressed) {
-            GameObject NewPoint = (GameObject)Instantiate(PaintPoint, paintPoint, Quaternion.identity);
+            GameObject NewPoint = (GameObject)Instantiate(PaintPointObject, new Vector3(pos.x, pos.y, pos.z + 0.1F), Quaternion.identity);
             NewPoint.SetActive(true);
         }
         

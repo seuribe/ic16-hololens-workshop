@@ -8,6 +8,9 @@ public class Simulation : MonoBehaviour {
 
     public GameObject simulationParent;
 
+    List<ForceApplier> forceAppliers = new List<ForceApplier>();
+    Vector3[] newForces;
+
     void Awake() {
         if (simulationParent == null)
             simulationParent = gameObject;
@@ -15,10 +18,16 @@ public class Simulation : MonoBehaviour {
 
 	void Start () {
         LoadParticles();
+        //var springForce = new SpringForce();
+        //springForce.AddSpring(particles[0], particles[1], 2, 1);
+        //forceAppliers.Add(springForce);
+        var isf = new InverseSquareForce(1);
+        forceAppliers.Add(isf);
     }
 
     void LoadParticles() {
         particles.AddRange(simulationParent.GetComponentsInChildren<Particle>());
+        newForces = new Vector3[particles.Count];
     }
 	
 	// Update is called once per frame
@@ -27,35 +36,40 @@ public class Simulation : MonoBehaviour {
 	}
 
     void Simulate(float delta) {
-        var newForces = new Vector3[particles.Count];
         for (int i = 0 ; i < particles.Count ; i++) {
             var a = particles[i];
-            Vector3 f = new Vector3();
+            Vector3 f = new Vector3(0, 0, 0);
             for (int j = 0 ; j < particles.Count ; j++) {
                 if (i == j)
                     continue;
                 
-                var b = particles[i];
-                // Do stuff between a and b & update f
-                var diff = (a.p - b.p);
-                var mag = diff.magnitude;
-                f += diff / mag * mag * mag;
+                var b = particles[j];
+
+                foreach (var force in forceAppliers) {
+                    f += force.CalculateForce(a, b);
+                }
             }
             newForces[i] = f;
         }
 
-        var d2 = delta*delta;
-		for (int i = 0 ; i < particles.Count ; i++) {
-            var p = particles[i];
+        for (int i = 0 ; i < particles.Count ; i++) {
+            var par = particles[i];
             var f = newForces[i];
-            p.transform.position += p.v * delta + 0.5f * d2 * f/p.mass;
+            par.v += delta * f/par.mass;
+            par.p += par.v * delta;
+
+            par.transform.GetComponentInChildren<LineRenderer>().SetPosition(1, par.v);
         }
     }
+/*
+    void AddParticle(Vector3? pos = null) {
+        if (pos == null)
+            pos = Vector3.zero;
 
-   /* void AddParticle(Vector3 pos = Vector3.zero) {
         var particle = new Particle();
-        particle.transform.position = pos;
+        particle.transform.position = pos.Value;
         particle.transform.parent = simulationParent.transform;
         particles.Add(particle);
-    }*/
+    }
+*/
 }
