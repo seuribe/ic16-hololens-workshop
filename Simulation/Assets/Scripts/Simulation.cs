@@ -8,13 +8,18 @@ public class Simulation : MonoBehaviour {
 
     public GameObject simulationParent;
 
+    ForceApplier forceApplier;
+
     void Awake() {
         if (simulationParent == null)
             simulationParent = gameObject;
+
     }
 
 	void Start () {
         LoadParticles();
+        forceApplier = new SpringForce();
+        (forceApplier as SpringForce).AddSpring(particles[0], particles[1], 2, 1);
     }
 
     void LoadParticles() {
@@ -23,10 +28,10 @@ public class Simulation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Simulate(Time.deltaTime);
+        Simulate(forceApplier, Time.deltaTime);
 	}
 
-    void Simulate(float delta) {
+    void Simulate(ForceApplier force, float delta) {
         var newForces = new Vector3[particles.Count];
         for (int i = 0 ; i < particles.Count ; i++) {
             var a = particles[i];
@@ -36,28 +41,16 @@ public class Simulation : MonoBehaviour {
                     continue;
                 
                 var b = particles[j];
-                // Do stuff between a and b & update f
-                var diff = b.p - a.p;
-                var distance = Vector3.Distance(a.transform.position, b.transform.position);
-                Debug.LogFormat("distance: {0}", distance);
-                if (distance == 0)
-                    continue;
 
-                f += (diff / (distance * distance * distance));
-                Debug.LogFormat("F updated: {0} -> {1}", f, diff);
+                f += force.CalculateForce(a, b);
             }
             newForces[i] = f;
-            Debug.LogFormat("F: {0}", f);
         }
 
-        var d2 = delta*delta;
         for (int i = 0 ; i < particles.Count ; i++) {
             var par = particles[i];
             var f = newForces[i];
-            Debug.LogFormat("par.v: {0}, par.p: {1}, par.mass: {2}", par.v, par.p, par.mass);
-            Debug.LogFormat("delta: {0}, f: {1}", delta, f);
             par.v += delta * f/par.mass;
-//            par.p += par.v * delta + 0.5f * d2 * f/par.mass;
             par.p += par.v * delta;
         }
     }
