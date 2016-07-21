@@ -9,6 +9,7 @@ public class Simulation : MonoBehaviour {
     public GameObject simulationParent;
 
     List<ForceApplier> forceAppliers = new List<ForceApplier>();
+    Vector3[] newForces;
 
     void Awake() {
         if (simulationParent == null)
@@ -26,6 +27,7 @@ public class Simulation : MonoBehaviour {
 
     void LoadParticles() {
         particles.AddRange(simulationParent.GetComponentsInChildren<Particle>());
+        newForces = new Vector3[particles.Count];
     }
 	
 	// Update is called once per frame
@@ -34,7 +36,6 @@ public class Simulation : MonoBehaviour {
 	}
 
     void Simulate(float delta) {
-        var newForces = new Vector3[particles.Count];
         for (int i = 0 ; i < particles.Count ; i++) {
             var a = particles[i];
             Vector3 f = new Vector3(0, 0, 0);
@@ -56,9 +57,11 @@ public class Simulation : MonoBehaviour {
             var f = newForces[i];
             par.v += delta * f/par.mass;
             par.p += par.v * delta;
+
+            par.transform.GetComponentInChildren<LineRenderer>().SetPosition(1, par.v);
         }
     }
-
+/*
     void AddParticle(Vector3? pos = null) {
         if (pos == null)
             pos = Vector3.zero;
@@ -68,5 +71,5 @@ public class Simulation : MonoBehaviour {
         particle.transform.parent = simulationParent.transform;
         particles.Add(particle);
     }
-
+*/
 }
