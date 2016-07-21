@@ -7,7 +7,7 @@ public class HandRecognition : MonoBehaviour {
     private Vector3 HandPosition;
     private Vector3 HandVelocity;
 
-    public GameObject Object;
+    public GameObject PaintPoint;
 
     void Awake()
     {
@@ -25,12 +25,12 @@ public class HandRecognition : MonoBehaviour {
         var HeadPosition = Camera.main.transform.position;
         var GazeDirection = Camera.main.transform.forward;
 
-        Vector3 PaintPoint = HandPosition + 0.1F * GazeDirection;
+        Vector3 paintPoint = HandPosition + 0.1F * GazeDirection;
 
-        Object.transform.position = PaintPoint;
+        PaintPoint.transform.position = paintPoint;
 
         if (hand.pressed) {
-            GameObject NewPoint = (GameObject)Instantiate(Object, PaintPoint, Quaternion.identity);
+            GameObject NewPoint = (GameObject)Instantiate(PaintPoint, paintPoint, Quaternion.identity);
             NewPoint.SetActive(true);
         }
         
