@@ -5,19 +5,20 @@ public class Particle : MonoBehaviour {
 
     public Vector3 v;
     public float mass;
+    LineRenderer lr;
 
     public Vector3 p {
         get { return transform.position; }
         set { transform.position = value; }
     }
 
-	// Use this for initialization
-	void Start () {
+    void Awake() {
+        lr = gameObject.GetComponentInChildren<LineRenderer>();
+    }
 	
-	}
-	
-	// Update is called once per frame
 	void Update () {
-	
+        if (lr != null) {
+            lr.SetPosition(1, v * Time.deltaTime * 5);
+        }
 	}
 }
