@@ -9,6 +9,7 @@ public class Simulation : MonoBehaviour {
     public GameObject simulationParent;
 
     List<ForceApplier> forceAppliers = new List<ForceApplier>();
+
     Vector3[] newForces;
 
     void Awake() {
@@ -38,18 +39,20 @@ public class Simulation : MonoBehaviour {
     void Simulate(float delta) {
         for (int i = 0 ; i < particles.Count ; i++) {
             var a = particles[i];
-            Vector3 f = new Vector3(0, 0, 0);
+            newForces[i].Set(0, 0, 0);
             for (int j = 0 ; j < particles.Count ; j++) {
                 if (i == j)
                     continue;
                 
                 var b = particles[j];
 
-                foreach (var force in forceAppliers) {
-                    f += force.CalculateForce(a, b);
+                for (int k = 0; k < forceAppliers.Count; k++)
+                {
+                    var force = forceAppliers[k];
+                    newForces[i] += force.CalculateForce(a, b);
                 }
             }
-            newForces[i] = f;
+            
         }
 
         for (int i = 0 ; i < particles.Count ; i++) {
@@ -58,7 +61,7 @@ public class Simulation : MonoBehaviour {
             par.v += delta * f/par.mass;
             par.p += par.v * delta;
 
-            par.transform.GetComponentInChildren<LineRenderer>().SetPosition(1, par.v);
+            //par.transform.GetComponentInChildren<LineRenderer>().SetPosition(1, par.v);
         }
     }
 /*
