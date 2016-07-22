@@ -13,9 +13,14 @@ public class SpringForce : ForceApplier
 
     public List<Spring> springs = new List<Spring>();
 
-    public void AddSpring(Particle a, Particle b, float restLength, float k) {
-        if (GetSpring(a, b) == null)
-            springs.Add(new Spring { a = a, b = b, restLength = restLength, k = k});
+    public Spring? AddSpring(Particle a, Particle b, float restLength, float k) {
+
+        if (GetSpring(a, b) != null) {
+            return null;
+        }
+        var spring = new Spring { a = a, b = b, restLength = restLength, k = k};
+        springs.Add(spring);
+        return spring;
     }
 
     Spring? GetSpring(Particle a, Particle b) {

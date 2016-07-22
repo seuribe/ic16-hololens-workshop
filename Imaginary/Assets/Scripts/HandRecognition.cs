@@ -11,6 +11,8 @@ public class HandRecognition : MonoBehaviour {
     public GameObject PaintPointObject;
 	public GameObject ParticleParent;
 
+    public GameObject SimulationSystem;
+
     void Awake()
     {
         // Register for hand and finger events to know where your hand
@@ -24,14 +26,19 @@ public class HandRecognition : MonoBehaviour {
         hand.properties.location.TryGetPosition(out pos);
         hand.properties.location.TryGetVelocity(out vel);
 
-		// Handposition rendering
-        PaintPointObject.transform.position = new Vector3(pos.x, pos.y, pos.z + 0.1F);
+        // Handposition rendering
+        var v = new Vector3(pos.x, pos.y, pos.z + 0.1F);
+        PaintPointObject.transform.position = v;
 
 		// create new Ball if hand is pressed
         if (hand.pressed) {
+            /*
             GameObject NewPoint = (GameObject)Instantiate(PaintPointObject, new Vector3(0,0,0), Quaternion.identity);
 			NewPoint.transform.parent = ParticleParent.transform;
 			NewPoint.SetActive(true);
+            */
+            // (SimulationSystem as Simulation).AddParticle(v);
+
         }
         
     }
