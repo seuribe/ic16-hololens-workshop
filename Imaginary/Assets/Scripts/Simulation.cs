@@ -18,7 +18,6 @@ public class Simulation : MonoBehaviour {
 
     List<ForceApplier> forceAppliers = new List<ForceApplier>();
     SpringForce springForce;
-    Vector3[] newForces;
 
     void Awake() {
         if (simulationParent == null)
@@ -29,31 +28,28 @@ public class Simulation : MonoBehaviour {
 	void Start () {
         if (initialParticles > 0) {
             for (int i = 0 ; i < initialParticles ; i++) {
-                var particle = Instantiate<GameObject>(particlePrefab);
-                particle.transform.position = new Vector3(
+                AddParticle(new Vector3(
                     initialAreaSize.x + Random.Range(-initialAreaSize.x, initialAreaSize.x),
                     initialAreaSize.y + Random.Range(-initialAreaSize.y, initialAreaSize.y),
-                    initialAreaSize.z + Random.Range(-initialAreaSize.z, initialAreaSize.z));
-                particles.Add(particle.GetComponent<Particle>());
-            }
+                    initialAreaSize.z + Random.Range(-initialAreaSize.z, initialAreaSize.z)));
+           }
 
         } else {
             LoadParticles();
         }
 
-        newForces = new Vector3[particles.Count];
-        InitializeSprings();
-        var isf = new InverseSquareForce(1);
-        forceAppliers.Add(isf);
-    }
+        //        InitializeSprings();
 
-    void InitializeSprings() {
         springForce = new SpringForce();
-        for (int i = 0 ; i < particles.Count ; i++) {
+
+        for (int i = 0; i < particles.Count; i++)
+        {
             int n = Random.Range(0, particles.Count);
-            if (n != i) {
+            if (n != i)
+            {
                 var spring = springForce.AddSpring(particles[i], particles[n], 0.5f, 1);
-                if (spring != null) {
+                if (spring != null)
+                {
                     var springGO = Instantiate<GameObject>(springPrefab);
                     springGO.transform.parent = springsHolder.transform;
                     var lr = springGO.GetComponent<LineRenderer>();
@@ -63,6 +59,12 @@ public class Simulation : MonoBehaviour {
             }
         }
         forceAppliers.Add(springForce);
+
+        var isf = new InverseSquareForce(1);
+        forceAppliers.Add(isf);
+    }
+
+    void InitializeSprings() {
     }
 
     void UpdateSprings() {
@@ -90,10 +92,14 @@ public class Simulation : MonoBehaviour {
 	}
 
     void Simulate(float delta) {
-        for (int i = 0 ; i < particles.Count ; i++) {
+        var N = particles.Count; // const?
+
+        Vector3[] newForces = new Vector3[N];
+
+        for (int i = 0 ; i < N ; i++) {
             var a = particles[i];
             newForces[i].Set(0,0,0);
-            for (int j = 0 ; j < particles.Count ; j++) {
+            for (int j = 0 ; j < N ; j++) {
                 if (i == j)
                     continue;
                 
@@ -106,7 +112,7 @@ public class Simulation : MonoBehaviour {
             }
         }
 
-        for (int i = 0 ; i < particles.Count ; i++) {
+        for (int i = 0 ; i < N ; i++) {
             var par = particles[i];
             var f = newForces[i];
             par.v += delta * f/par.mass;
@@ -115,14 +121,14 @@ public class Simulation : MonoBehaviour {
         UpdateSprings();
     }
 
-    void AddParticle(Vector3? pos = null) {
+    public void AddParticle(Vector3? pos = null) {
         if (pos == null)
             pos = Vector3.zero;
 
         var particle = Instantiate<GameObject>(particlePrefab);
         particle.transform.position = pos.Value;
 
-        // particle.transform.parent = simulationParent.transform;
+        particle.transform.parent = simulationParent.transform;
 
         particles.Add(particle.GetComponent<Particle>());
 

@@ -17,7 +17,7 @@ public class HandRecognition : MonoBehaviour {
     {
         // Register for hand and finger events to know where your hand
         InteractionManager.SourceUpdated += InteractionManager_SourceUpdated;
-
+        
     }
     
     private void InteractionManager_SourceUpdated(InteractionSourceState hand)
@@ -27,9 +27,10 @@ public class HandRecognition : MonoBehaviour {
         hand.properties.location.TryGetVelocity(out vel);
 
         // Handposition rendering
-        var v = new Vector3(pos.x, pos.y, pos.z + 0.1F);
+        var v = new Vector3(pos.x, pos.y, pos.z + 0.01F);
         PaintPointObject.transform.position = v;
-
+        
+        
 		// create new Ball if hand is pressed
         if (hand.pressed) {
             /*
@@ -37,7 +38,7 @@ public class HandRecognition : MonoBehaviour {
 			NewPoint.transform.parent = ParticleParent.transform;
 			NewPoint.SetActive(true);
             */
-            // (SimulationSystem as Simulation).AddParticle(v);
+            SimulationSystem.GetComponent<Simulation>().AddParticle(v);
 
         }
         
