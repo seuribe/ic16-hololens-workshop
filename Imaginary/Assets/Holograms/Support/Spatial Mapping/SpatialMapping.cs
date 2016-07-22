@@ -9,6 +9,9 @@ public class SpatialMapping : MonoBehaviour
 
     [Tooltip("The material to use when rendering Spatial Mapping data.")]
     public Material DrawMaterial;
+
+    public PhysicMaterial PhysicMaterial0;
+
     [Tooltip("If true, the Spatial Mapping data will be rendered.")]
     public bool DrawVisualMeshes = false;
 
@@ -78,7 +81,7 @@ public class SpatialMapping : MonoBehaviour
                     surface = new GameObject(string.Format("Surface-{0}", surfaceId));
                     surface.AddComponent<MeshFilter>();
                     surface.AddComponent<MeshRenderer>().sharedMaterial = DrawMaterial;
-                    surface.AddComponent<MeshCollider>();
+                    surface.AddComponent<MeshCollider>().material = PhysicMaterial0;
                     surface.AddComponent<WorldAnchor>();
                     // Set the layer that this SpatialMapping surface is a part of
                     surface.layer = PhysicsLayer;
