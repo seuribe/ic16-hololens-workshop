@@ -10,6 +10,9 @@ public class SpringRenderer : MonoBehaviour {
 	}
 	
 	void Update () {
+        if (spring.a == null || spring.b == null)
+            return;
+
         lr.SetPosition(0, spring.a.p);
         lr.SetPosition(1, spring.b.p);
         lr.SetWidth(0.1f, 0.1f);

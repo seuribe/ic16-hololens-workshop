@@ -56,8 +56,14 @@ public class Simulation : MonoBehaviour {
     }
 
     public void ClearSimulation() {
-        particles.Clear();
+        foreach (Transform child in springsHolder.transform) {
+            GameObject.Destroy(child.gameObject);
+        }
+        foreach (Transform child in simulationParent.transform) {
+            GameObject.Destroy(child.gameObject);
+        }
         springForce.Clear();
+        particles.Clear();
     }
 
     public void LoadParticles() {
@@ -110,6 +116,7 @@ public class Simulation : MonoBehaviour {
         if (spring != null) {
             var springGO = Instantiate<GameObject>(springPrefab);
             springGO.GetComponent<SpringRenderer>().spring = spring.Value;
+            springGO.transform.parent = springsHolder.transform;
         }
 
         return spring;
