@@ -7,8 +7,8 @@ public class Simulation : MonoBehaviour {
     readonly List<Particle> particles = new List<Particle>();
 
     public GameObject simulationParent;
-    public int initialParticles = 0;
-    public Vector3 initialAreaSize = new Vector3(10, 10, 10);
+    public int initialParticles = 5;
+    public Vector3 initialAreaSize = new Vector3(3, 3, 3);
     public GameObject particlePrefab;
     public GameObject springsHolder;
     public GameObject springPrefab;
@@ -22,7 +22,7 @@ public class Simulation : MonoBehaviour {
     void Awake() {
         if (simulationParent == null)
             simulationParent = gameObject;
-        Time.timeScale = 0.1f;
+        Time.timeScale = 0.03f;
     }
 
 	void Start () {

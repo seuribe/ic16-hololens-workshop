@@ -24,14 +24,27 @@ public class Particle : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        /*
+        
         MeshCollider collider = (MeshCollider)other;
 
-        Mesh mesh = collider.sharedMesh;
-        Vector3[] normals = mesh.normals;
+        // Mesh mesh = collider.sharedMesh;
+        
+        /* Vector3[] normals = mesh.normals;
         int[] triangles = mesh.triangles;
         */
-        v = -v; // new Vector3();
+        
+
         // other.gameObject.
+         
+        v = -v; // new Vector3();
+        Debug.Log("OnTriggerEnter...");
+    }
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Debug.Log("OnControllerColliderHit: Normal vector we collided at: " + hit.normal);
+        // v = -v; // new Vector3();
+        v = Vector3.Reflect(v, hit.normal);
+
     }
 }
