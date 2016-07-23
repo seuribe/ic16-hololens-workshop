@@ -1,8 +1,0 @@
-*.cs text diff=csharp
-
-*.txt text
-*.md text
-
-*.prefab eol=lf
-
-.gitattributes text
