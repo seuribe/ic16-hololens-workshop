@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class Trefoil : MonoBehaviour {
+public class Trefoil {
 
-    public float R1 = 3;
-    public float R2 = 1;
+    public float R1 = 6;
+    public float R2 = 2f;
+
+    public float springLength = 2.1f;
+    public float springStrength = 80f;
 
     public void Build(Simulation sim, int numPoints) {
         var max = Mathf.PI * 2;
@@ -17,11 +19,11 @@ public class Trefoil : MonoBehaviour {
 			if (i == 0)
             	first = par;
             else
-            	sim.AddSpring(par, prev, 1f, 100f);
+            	sim.AddSpring(par, prev, springLength, springStrength);
 
             prev = par;
         }
-        sim.AddSpring(prev, first, 1f, 100f);
+        sim.AddSpring(prev, first, springLength, springStrength);
     }
 
     Vector3 TrefoilPoint(float t) {
@@ -32,14 +34,4 @@ public class Trefoil : MonoBehaviour {
             (R1 + R2 * Mathf.Cos(phi)) * Mathf.Sin(theta),
             (R2 * Mathf.Sin(phi)));
     }
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

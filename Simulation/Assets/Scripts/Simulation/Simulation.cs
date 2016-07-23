@@ -15,12 +15,10 @@ public class Simulation : MonoBehaviour {
 
     public float damping = 0.9f;
 
-    Dictionary<SpringForce.Spring, LineRenderer> springRenderers
-        = new Dictionary<SpringForce.Spring, LineRenderer>();
+    public float InverseSquareForce = -0.5f;
 
     List<ForceApplier> forceAppliers = new List<ForceApplier>();
     SpringForce springForce;
-    Vector3[] newForces;
 
     void Awake() {
         if (simulationParent == null)
@@ -28,32 +26,27 @@ public class Simulation : MonoBehaviour {
     }
 
 	void Start () {
-        if (initialParticles > 0) {
-            for (int i = 0 ; i < initialParticles ; i++) {
-                var particle = Instantiate<GameObject>(particlePrefab);
-                particle.transform.position = new Vector3(
+        springForce = new SpringForce();
+        forceAppliers.Add(springForce);
+        forceAppliers.Add(new InverseSquareForce(InverseSquareForce));
+    }
+
+    public void AddTrefoil(int numNodes = 48) {
+        new Trefoil().Build(this, numNodes);
+    }
+
+    public void AddRandomParticles(int numParticles = 50) {
+        for (int i = 0 ; i < numParticles ; i++) {
+            var particle = Instantiate<GameObject>(particlePrefab);
+            particle.transform.position = new Vector3(
                     Random.Range(-initialAreaSize.x, initialAreaSize.x),
                     Random.Range(-initialAreaSize.y, initialAreaSize.y),
                     Random.Range(-initialAreaSize.z, initialAreaSize.z));
-                particles.Add(particle.GetComponent<Particle>());
-            }
-
-        } else {
-            LoadParticles();
+            particles.Add(particle.GetComponent<Particle>());
         }
-        springForce = new SpringForce();
-        forceAppliers.Add(springForce);
-
-        Trefoil tf = new Trefoil();
-        tf.Build(this, 48);
-
-        newForces = new Vector3[particles.Count];
-//        InitializeSprings();
-        var isf = new InverseSquareForce(-10f);
-        forceAppliers.Add(isf);
     }
 
-    void InitializeSprings() {
+    public void AddRandomSprings() {
         for (int i = 0 ; i < particles.Count ; i++) {
             int n = Random.Range(0, particles.Count);
             if (n != i) {
@@ -62,34 +55,23 @@ public class Simulation : MonoBehaviour {
         }
     }
 
-    void UpdateSprings() {
-        foreach (var spring in springRenderers.Keys) {
-            var lr = springRenderers[spring];
-            lr.SetPosition(0, spring.a.p);
-            lr.SetPosition(1, spring.b.p);
-            lr.SetWidth(0.1f, 0.1f);
-            var dist = Vector3.Distance(spring.a.p, spring.b.p);
-            bool stretched = spring.restLength < dist;
-            float maxStretch = spring.restLength * 2;
-            float k = stretched ? spring.restLength / dist : dist / spring.restLength;
-            var col = Color.Lerp(stretched ? Color.red : Color.yellow, Color.green, k);
-            lr.material.SetColor("_Color", col);
-        }
+    public void ClearSimulation() {
+        particles.Clear();
+        springForce.Clear();
     }
 
-    void LoadParticles() {
+    public void LoadParticles() {
         particles.AddRange(simulationParent.GetComponentsInChildren<Particle>());
     }
 	
-	// Update is called once per frame
 	void Update () {
         Simulate(Time.deltaTime);
 	}
 
     void Simulate(float delta) {
+        Vector3[] newForces = new Vector3[particles.Count];
         for (int i = 0 ; i < particles.Count ; i++) {
             var a = particles[i];
-            newForces[i].Set(0,0,0);
             for (int j = 0 ; j < particles.Count ; j++) {
                 if (i == j)
                     continue;
@@ -101,12 +83,6 @@ public class Simulation : MonoBehaviour {
                     newForces[i] += force.CalculateForce(a, b);
                 }
             }
-            /*
-            var colorK = 10 / 
-                Vector3.Distance(a.p, Camera.main.transform.position);
-            var color = Color.Lerp(Color.red, Color.white, colorK);
-            a.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
-            */
         }
 
         for (int i = 0 ; i < particles.Count ; i++) {
@@ -115,7 +91,6 @@ public class Simulation : MonoBehaviour {
             par.v += delta * f/par.mass * damping;
             par.p += par.v * delta;
         }
-        UpdateSprings();
     }
 
     public Particle AddParticle(Vector3? pos = null) {
@@ -134,10 +109,7 @@ public class Simulation : MonoBehaviour {
         var spring = springForce.AddSpring(a, b, l, k);
         if (spring != null) {
             var springGO = Instantiate<GameObject>(springPrefab);
-            springGO.transform.parent = springsHolder.transform;
-            var lr = springGO.GetComponent<LineRenderer>();
-            Debug.LogFormat("lr: {0}, spring: {1}", lr, spring);
-            springRenderers.Add(spring.Value, lr);
+            springGO.GetComponent<SpringRenderer>().spring = spring.Value;
         }
 
         return spring;
