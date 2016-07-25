@@ -47,7 +47,7 @@ public class Simulation : MonoBehaviour {
 
     public void AddRandomParticles(int numParticles = 50) {
         for (int i = 0 ; i < numParticles ; i++) {
-            var rndPos = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+            var rndPos = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             AddParticle(initialArea.center + Vector3.Scale(initialArea.extents, rndPos));
         }
     }
