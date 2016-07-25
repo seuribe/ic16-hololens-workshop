@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SpringForce : ForceApplier
 {
+    [Serializable]
     public struct Spring {
         public Particle a;
         public Particle b;
@@ -43,6 +44,10 @@ public class SpringForce : ForceApplier
         return (other.p - a.p).normalized *
             (distance - spring.restLength) *
             spring.k;
+    }
+
+    public void Clear() {
+        springs.Clear();
     }
 }
 

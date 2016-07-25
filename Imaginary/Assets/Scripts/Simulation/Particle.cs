@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// The basic element of the simulations.
+/// </summary>
 public class Particle : MonoBehaviour {
 
     public Vector3 v;
     public float mass;
+    // Used for visualizing v
     LineRenderer lr;
 
     public Vector3 p {
@@ -16,35 +20,20 @@ public class Particle : MonoBehaviour {
         lr = gameObject.GetComponentInChildren<LineRenderer>();
     }
 	
-	void Update () {
-        if (lr != null) {
+	void Update ()
+    {
+        if (lr != null)
             lr.SetPosition(1, v * Time.deltaTime * 5);
-        }
 	}
 
     void OnTriggerEnter(Collider other)
     {
-        
-        MeshCollider collider = (MeshCollider)other;
-
-        // Mesh mesh = collider.sharedMesh;
-        
-        /* Vector3[] normals = mesh.normals;
-        int[] triangles = mesh.triangles;
-        */
-        
-
-        // other.gameObject.
-         
-        v = -v; // new Vector3();
-        Debug.Log("OnTriggerEnter...");
+        // Just bounce away
+        v = -v;
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        Debug.Log("OnControllerColliderHit: Normal vector we collided at: " + hit.normal);
-        // v = -v; // new Vector3();
         v = Vector3.Reflect(v, hit.normal);
-
     }
 }
